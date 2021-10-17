@@ -212,7 +212,9 @@
 					loadVpd();
 				}, onProgress, null);
 			}
-			
+
+			let mouseX, mouseY;
+			let lines = [null, null, null, null, null, null, null, null];
 
 			// keypress event
 			window.addEventListener('keypress', onKeyPress);
@@ -238,7 +240,15 @@
 				}
 
 				if(e.key === 'q' || e.key === 'Q'){
+					for(let i=0; i<4; i++){
+						console.log('x, y = ', lines[i].position.x, lines[i].position.y)
 
+						if(i % 2 === 1){
+							lines[i+4] = drawLine(0x0000ff, i+5, false, -lines[i].position.x, lines[i].position.y)
+						}else{
+							lines[i+4] = drawLine(0xff0000, i+5, true, -lines[i].position.x, lines[i].position.y)
+						}
+					}
 				}
 
 				// strong baseline
@@ -259,8 +269,6 @@
 					loadMMD(modelIndex);
 				}
 			}
-
-			let mouseX, mouseY;
 
 			window.addEventListener('mousemove', onMouseMove);
 
@@ -288,10 +296,10 @@
 				console.log('mouseX: ' + mouseX, 'mouseY: ' + mouseY);
 			}
 
-			let lines = [null, null, null, null];
+			// drawLine(0xffbbff, 5, true, 0, 0);
 
 			//畫線
-			function drawLine(color, i, vertical=false){
+			function drawLine(color, i, vertical=false, x=null, y=null){
 				//create a blue LineBasicMaterial
 				// const material = new THREE.LineBasicMaterial({ color });
 				
@@ -313,8 +321,13 @@
 				let material = new THREE.MeshBasicMaterial( {color:color} );
 				const line = new THREE.Mesh( geometry, material );
 
-				line.position.x = mouseX;
-				line.position.y = mouseY;
+				if(x === null && y === null){
+					line.position.x = mouseX;
+					line.position.y = mouseY;
+				}else{
+					line.position.x = x;
+					line.position.y = y;
+				}
 				line.position.z = 10;
 				
 				if(lines[i-1] !== null){

@@ -15,6 +15,11 @@
 		a {
 			color: #08f;
 		}
+
+		.btn, .info{
+			position: absolute;
+			top: 0;
+		}
 	</style>
 </head>
 
@@ -45,7 +50,7 @@
 			//有幾個項目就呼叫幾個 addChild
 			//addChild 要比 renderModal 先呼叫
 			so.addChild("視角可以移動及放大", 2, true);
-			so.addChild("在畫面上畫出左眼的邊框", 2, false);
+			so.addChild("在畫面上畫出左眼的邊框", 2, true);
 			so.addChild("複製左眼邊框變化到右眼", 2, false);
 			so.addChild("可選擇當前讀取角色或按鍵選擇上 / 下一隻角色", 1, true);
 			so.addChild("可儲存座標點檔案", 1, false);
@@ -64,7 +69,7 @@
 				//5. 自評表 checkbox 文字大小 (預設多少忘了)
 				'15px',
 				//6. 自評表標題 (預設 "自我評分表")
-				dialogTitle = "自我評分表"
+				dialogTitle = "自我評分表(110598028)"
 			);
 
 			//設定下載按鈕 <-- 一定要呼叫這個函數，不然沒有下載功能
@@ -217,19 +222,19 @@
 
 				// medium baseline
 				if(e.key === '1'){
-					
+					drawLine(0x0000ff, 1);
 				}
 
 				if(e.key === '2'){
-					
+					drawLine(0xff0000, 2, true);
 				}
 
 				if(e.key === '3'){
-					
+					drawLine(0x0000ff, 3);
 				}
 
 				if(e.key === '4'){
-					
+					drawLine(0xff0000, 4, true);
 				}
 
 				if(e.key === 'q' || e.key === 'Q'){
@@ -253,6 +258,71 @@
 					modelIndex = (modelIndex+1) % modelFile.length;
 					loadMMD(modelIndex);
 				}
+			}
+
+			let mouseX, mouseY;
+
+			window.addEventListener('mousemove', onMouseMove);
+
+			function onMouseMove(event){
+				//创建raycaster、mouse等必要的元素
+				let raycaster = new THREE.Raycaster();
+
+				// mouse move
+				let mouse = new THREE.Vector2();
+
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+				raycaster.setFromCamera(mouse, camera);
+				//从相机发出一条射线经过鼠标点击的位置
+				let intersects = raycaster.intersectObjects(scene.children);
+
+				console.log(intersects);
+				
+				if(intersects.length > 0){
+					mouseX = intersects[0].point.x;
+					mouseY = intersects[0].point.y;
+				}
+
+				console.log('mouseX: ' + mouseX, 'mouseY: ' + mouseY);
+			}
+
+			let lines = [null, null, null, null];
+
+			//畫線
+			function drawLine(color, i, vertical=false){
+				//create a blue LineBasicMaterial
+				// const material = new THREE.LineBasicMaterial({ color });
+				
+				// const points = [];
+				// points.push( new THREE.Vector3( 0, 0, 25 ) );
+				// points.push( new THREE.Vector3( 50, 0, 25 ) );
+
+				// const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+				// const line = new THREE.Line(geometry, material);
+
+				let geometry;
+				if(vertical){
+					geometry = new THREE.BoxGeometry( 0.005, 1, 0 );
+				}else{
+					geometry = new THREE.BoxGeometry( 1, 0.005, 0 );
+				}
+				console.log("color: " + color);
+				let material = new THREE.MeshBasicMaterial( {color:color} );
+				const line = new THREE.Mesh( geometry, material );
+
+				line.position.x = mouseX;
+				line.position.y = mouseY;
+				line.position.z = 10;
+				
+				if(lines[i-1] !== null){
+					scene.remove(lines[i-1])
+				}
+
+				lines[i-1]=line;
+				scene.add(lines[i-1]);
 			}
 
 			//

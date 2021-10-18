@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>three.js webgl - loaders - MMD loader</title>
+	<title>110598028 張登凱 bounding boxes tool</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link type="text/css" rel="stylesheet" href="main.css">
@@ -16,9 +16,13 @@
 			color: #08f;
 		}
 
-		.btn, .info{
+		.btn{
 			position: absolute;
 			top: 0;
+		}
+
+		#info{
+			display: none;
 		}
 	</style>
 </head>
@@ -182,6 +186,7 @@
 
 			loadMMD(modelIndex);
 
+			// load mmd model
 			function loadMMD(index){
 				loader.load(modelFile[index], function (object) {
 					if(mesh !== null){
@@ -272,8 +277,9 @@
 
 			window.addEventListener('mousemove', onMouseMove);
 
+			//取得與mmd model相交的滑鼠座標
 			function onMouseMove(event){
-				//创建raycaster、mouse等必要的元素
+				//新增raycaster、mouse等必要的元素
 				let raycaster = new THREE.Raycaster();
 
 				// mouse move
@@ -283,41 +289,32 @@
 				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
 				raycaster.setFromCamera(mouse, camera);
-				//从相机发出一条射线经过鼠标点击的位置
+				//從相機發出一條射線經過滑鼠移動的位置
 				let intersects = raycaster.intersectObjects(scene.children);
 
-				console.log(intersects);
+				//console.log(intersects);
 				
 				if(intersects.length > 0){
 					mouseX = intersects[0].point.x;
 					mouseY = intersects[0].point.y;
 				}
 
-				console.log('mouseX: ' + mouseX, 'mouseY: ' + mouseY);
+				//console.log('mouseX: ' + mouseX, 'mouseY: ' + mouseY);
 			}
-
-			// drawLine(0xffbbff, 5, true, 0, 0);
 
 			//畫線
 			function drawLine(color, i, vertical=false, x=null, y=null){
-				//create a blue LineBasicMaterial
-				// const material = new THREE.LineBasicMaterial({ color });
-				
-				// const points = [];
-				// points.push( new THREE.Vector3( 0, 0, 25 ) );
-				// points.push( new THREE.Vector3( 50, 0, 25 ) );
-
-				// const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-				// const line = new THREE.Line(geometry, material);
-
 				let geometry;
+
+				//是直的 or 橫的線
 				if(vertical){
 					geometry = new THREE.BoxGeometry( 0.005, 1, 0 );
 				}else{
 					geometry = new THREE.BoxGeometry( 1, 0.005, 0 );
 				}
-				console.log("color: " + color);
+
+				//console.log("color: " + color);
+
 				let material = new THREE.MeshBasicMaterial( {color:color} );
 				const line = new THREE.Mesh( geometry, material );
 
